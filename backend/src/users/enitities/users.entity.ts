@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import { Drink } from 'src/drinks/entities/drinks.enitity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable } from 'typeorm';
 
 @Entity()
 export class Users {
@@ -16,6 +17,14 @@ export class Users {
 
   @Column({unique:true})
   username: string;
+
+  @ManyToMany(()=>Drink)
+  liked_drinks:Drink[]
+
+  @ManyToMany(()=>Drink)
+  @JoinTable()
+  disliked_drinks:Drink[]
+
 
 
 }

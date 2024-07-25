@@ -1,3 +1,4 @@
+import { Drink } from 'src/drinks/entities/drinks.enitity';
 import { Users } from 'src/users/enitities/users.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne } from 'typeorm';
 
@@ -15,8 +16,8 @@ export class Reviews {
   @ManyToOne(()=>Users)
   user:Users
 
-  @Column()
-  id_drink:number
+  @ManyToOne(()=>Drink)
+  drink:Drink
 
   
 }

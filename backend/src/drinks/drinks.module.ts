@@ -2,13 +2,12 @@ import { Module } from '@nestjs/common';
 import { DrinksService } from './drinks.service';
 import { DrinksController } from './drinks.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RoomDrinks } from './entities/rooms_drinks_link.entity';
-import { UserLikedDrinks } from './entities/user_liked_drinks';
+import { Drink } from './entities/drinks.enitity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([RoomDrinks,UserLikedDrinks])],
+  imports:[TypeOrmModule.forFeature([Drink])],
   controllers: [DrinksController],
   providers: [DrinksService],
-  exports:[TypeOrmModule.forFeature([RoomDrinks,UserLikedDrinks])]
+  exports:[TypeOrmModule.forFeature([Drink])]
 })
 export class DrinksModule {}

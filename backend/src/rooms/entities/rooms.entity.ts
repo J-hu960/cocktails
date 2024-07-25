@@ -1,3 +1,4 @@
+import { Drink } from 'src/drinks/entities/drinks.enitity';
 import { Users } from 'src/users/enitities/users.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, ManyToMany, JoinTable } from 'typeorm';
 
@@ -18,4 +19,10 @@ export class Rooms {
   @ManyToMany(()=>Users)
   @JoinTable()
    users:Users[]
+
+  @ManyToMany(()=>Users)
+  @JoinTable()
+   drinks:Drink[]
+
+
 }
