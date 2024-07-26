@@ -21,7 +21,7 @@ export class AuthService {
         throw new UnauthorizedException()
      }
 
-    const jwt = await this.createAccessToken(userStored.PK_User)
+    const jwt = await this.createAccessToken(userStored.username)
     return jwt
     }
 
@@ -35,7 +35,7 @@ export class AuthService {
     try {
         const hashedPassword =  await this.hashPassword(user.password)
         const newUser:Users = await this.usersService.createUser(hashedPassword,user.username,)
-        const jwt = await this.createAccessToken(newUser.PK_User)
+        const jwt = await this.createAccessToken(newUser.username)
      
         console.log(newUser)
         return jwt
@@ -45,8 +45,8 @@ export class AuthService {
         throw new UnauthorizedException()   
      }}
 
-    async createAccessToken(id:number):Promise<string>{
-      const payload = {id:id}
+    async createAccessToken(username:string):Promise<string>{
+      const payload = {username:username}
       const access_token:string = await this.jwtService.signAsync(payload)
       return  access_token
      }

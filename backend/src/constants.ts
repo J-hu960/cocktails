@@ -1,0 +1,1 @@
+export const API_COCKTAILS_BASE = '`https://www.thecocktaildb.com/api'

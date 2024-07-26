@@ -18,10 +18,11 @@ export class Users {
   @Column({unique:true})
   username: string;
 
-  @ManyToMany(()=>Drink)
+  @ManyToMany(()=>Drink,{cascade:true})
+  @JoinTable()
   liked_drinks:Drink[]
 
-  @ManyToMany(()=>Drink)
+  @ManyToMany(()=>Drink,{cascade:true})
   @JoinTable()
   disliked_drinks:Drink[]
 

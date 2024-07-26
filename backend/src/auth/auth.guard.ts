@@ -26,7 +26,7 @@ export class AuthGuard implements CanActivate{
                     secret:this.configService.get('SECRET_JWT')
                 }
             )
-            const user = await this.userService.findOne(payload.id)
+            const user = await this.userService.findOne(payload.username)
             request['user'] =  user
             console.log(user)
 
