@@ -89,6 +89,47 @@ export class UsersService {
             throw new Error('No se pudo actualizar las bebidas favoritas del usuario.');
         }
     }
+
+      async addDrinkToUserDisLikeds(idDrink: number, idUser: number) {
+      const user = await this.findOneById(idUser);
+      const drink = await this.drinkService.getBBDDDrink(idDrink);
+  
+      if (!user.disliked_drinks) {
+        user.disliked_drinks = [];
+      }
+  
+      user.disliked_drinks.push(drink);
+      await this.userRepository.save(user);
+      }
+
+      async subDrinkToUserDisLikeds(idDrink: number, idUser: number) {
+        try {
+            // Encuentra el usuario por ID
+            const user = await this.findOneById(idUser);
+            
+            // Verifica si el usuario tiene la propiedad liked_drinks y asegúrate de que sea un array
+            if (!user.disliked_drinks) {
+                user.disliked_drinks = [];
+            }
+    
+            // Filtra la bebida que se desea eliminar
+            const removedDrinks = user.disliked_drinks.filter(drink => drink.PK_Drink !== idDrink);
+    
+            // Asigna la lista filtrada de vuelta al usuario
+            user.disliked_drinks = removedDrinks;
+    
+            // Guarda el usuario actualizado
+            await this.userRepository.save(user);
+        } catch (error) {
+            // Manejo de errores
+            console.error('Error al actualizar las bebidas no favoritas del usuario:', error);
+            throw new Error('No se pudo actualizar las bebidas no  favoritas del usuario.');
+        }
+    }
+
+      
+
+
     
       async hasAlreadyLiked(idUser:number,idDrink:number):Promise<boolean>{
         const likedByUser = await this.userRepository.createQueryBuilder('user')
@@ -108,6 +149,24 @@ export class UsersService {
             return false
         } 
     }
+     async hasAlreadyDisliked(idUser:number,idDrink:number):Promise<boolean>{
+      const dislikedByUser = await this.userRepository.createQueryBuilder('user')
+      .leftJoinAndSelect('user.disliked_drinks','drink')
+      .where("user.PK_User = :id",{id:idUser})
+      .getOne()
+
+      console.log(dislikedByUser.disliked_drinks)
+
+      const hasdisLiked = dislikedByUser.disliked_drinks.some(drink=>drink.PK_Drink == idDrink)
+
+      if(hasdisLiked){
+          return true
+
+      }else{
+          console.log('aun no le ha dado like')
+          return false
+      } 
+      }
 
 
 

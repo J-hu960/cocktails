@@ -7,6 +7,12 @@ export class Rooms {
   @PrimaryGeneratedColumn()
   PK_Rooms: number;
 
+  @Column()
+  name:string
+
+  @Column()
+  isPublic:boolean
+
   @CreateDateColumn()
   createdAt:Date
 
