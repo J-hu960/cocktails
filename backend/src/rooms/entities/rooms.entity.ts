@@ -7,7 +7,7 @@ export class Rooms {
   @PrimaryGeneratedColumn()
   PK_Rooms: number;
 
-  @Column()
+  @Column({unique:true})
   name:string
 
   @Column()
@@ -16,17 +16,17 @@ export class Rooms {
   @CreateDateColumn()
   createdAt:Date
 
-  @Column()
+  @Column({nullable:true})
   secret_key:string;
 
-  @ManyToOne(()=>Users)
+  @ManyToOne(()=>Users,{cascade:true})
   user:Users
 
   @ManyToMany(()=>Users)
   @JoinTable()
    users:Users[]
 
-  @ManyToMany(()=>Users)
+  @ManyToMany(()=>Drink)
   @JoinTable()
    drinks:Drink[]
 
