@@ -1,8 +1,10 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Users } from './enitities/users.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DrinksService } from 'src/drinks/drinks.service';
+import { UpdateUserDTO } from './dto/UpdateUserDTO';
+import { error } from 'console';
 
 @Injectable()
 export class UsersService {
@@ -23,7 +25,7 @@ export class UsersService {
                password:hashedPassword,
             }).execute()
     
-            return newUser
+            return username
             
         } catch (error) {
             return error
@@ -126,14 +128,31 @@ export class UsersService {
             throw new Error('No se pudo actualizar las bebidas no  favoritas del usuario.');
         }
     }
+    async updateUserProfile(user:Users,body:UpdateUserDTO){
+      try {
+        const userInBDD = await this.findOneById(user.PK_User)
+        if(!userInBDD){
+          throw new UnauthorizedException({error:'El usuaio no existe'})
+        }
+  
+        const duplicateUsername =  await this.findOne(body.username)
+        if(duplicateUsername){
+          throw new BadRequestException({error:'Este nombre de usuario ya existe'})
+        }
+    
+        user.username = body.username
+        await this.userRepository.save(user)
+        
+      } catch (error) {
+        throw error
+        
+      }
+     
+  
+    }
 
     
-
-      
-
-
-    
-      async hasAlreadyLiked(idUser:number,idDrink:number):Promise<boolean>{
+    async hasAlreadyLiked(idUser:number,idDrink:number):Promise<boolean>{
         const likedByUser = await this.userRepository.createQueryBuilder('user')
         .leftJoinAndSelect('user.liked_drinks','drink')
         .where("user.PK_User = :id",{id:idUser})
@@ -151,7 +170,7 @@ export class UsersService {
             return false
         } 
     }
-     async hasAlreadyDisliked(idUser:number,idDrink:number):Promise<boolean>{
+    async hasAlreadyDisliked(idUser:number,idDrink:number):Promise<boolean>{
       const dislikedByUser = await this.userRepository.createQueryBuilder('user')
       .leftJoinAndSelect('user.disliked_drinks','drink')
       .where("user.PK_User = :id",{id:idUser})
@@ -168,8 +187,14 @@ export class UsersService {
           console.log('aun no le ha dado like')
           return false
       } 
-      }
+     }
 
+    async deleteUser(user:Users){
+      await this.userRepository.createQueryBuilder()
+      .delete()
+      .where('PK_User = :id',{id:user.PK_User})
+      .execute()
+    }
 
 
     

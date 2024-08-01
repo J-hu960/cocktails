@@ -34,10 +34,10 @@ export class AuthService {
   
     try {
         const hashedPassword =  await this.hashPassword(user.password)
-        const newUser:Users = await this.usersService.createUser(hashedPassword,user.username,)
-        const jwt = await this.createAccessToken(newUser.username)
+        const newUsername = await this.usersService.createUser(hashedPassword,user.username,)
+        const jwt = await this.createAccessToken(newUsername)
      
-        console.log(newUser)
+        console.log(newUsername)
         return jwt
         
     } catch (error) {
