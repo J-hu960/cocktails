@@ -1,22 +1,24 @@
+import { TDrink } from '@/app/types';
 import { useState } from 'react';
 import { SelectList } from 'react-native-dropdown-select-list'
 
-const SelectListCompont = () =>{
-  const [selected, setSelected] =useState<string>("");
+const SelectListCompont = ({selected,setSelected}) =>{
   
   const data = [
-      {key:'1', value:'Mobiles', disabled:true},
-      {key:'2', value:'Appliances'},
-      {key:'3', value:'Cameras'},
-      {key:'4', value:'Computers', disabled:true},
-      {key:'5', value:'Vegetables'},
-      {key:'6', value:'Diary Products'},
-      {key:'7', value:'Drinks'},
+      {key:'1', value:'Cocktail'},
+      {key:'2', value:'Ordinary Drink'},
+      {key:'3', value:"Punch / Party Drink"},
+      {key:'4', value:'Shake'},
+      {key:'5', value:'Cocoa'},
+      {key:'6', value:'Shot'},
+      {key:'7', value:'Beer'},
+      {key:'8', value:"Soft Drink"},
+      {key:'9', value:'Coffee / Tea'},
   ]
 
   return(
     <SelectList 
-        setSelected={(val:string) => setSelected(val)} 
+        setSelected={(val:TDrink) => setSelected(val)} 
         data={data} 
         save="value"
         searchPlaceholder='Filtrar...'

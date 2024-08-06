@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
 import { TDrink } from '@/app/types';
+import { Link } from 'expo-router';
 
 interface Props {
   cocktail: TDrink;
@@ -20,7 +21,14 @@ const CocktailItem = ({ cocktail }: Props) => {
       
       <View style={styles.moreButtonContainer}>
         <TouchableOpacity style={styles.moreButton}>
-          <Text style={styles.moreButtonText}>Ver más</Text>
+          <Link
+           href={{
+            pathname: '/drinks/[id]',
+            params: { id: cocktail.PK_Drink},
+          }}>          
+            <Text style={styles.moreButtonText}>Ver más</Text>
+
+          </Link>
         </TouchableOpacity>
       </View>
       

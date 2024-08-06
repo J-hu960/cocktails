@@ -1,36 +1,58 @@
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import React, { useEffect, useState } from 'react'
 import CocktailItem from '@/components/CocktailItem';
 import { SelectList } from 'react-native-dropdown-select-list';
 import SelectListCompont from '@/components/SelectList';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { TDrink } from '../types';
+import { TCategory, TDrink } from '../types';
 import axios from 'axios';
 import { getTokenFromStore } from '../utils/asyncStore';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets()
   const [drinks, setDrinks] = useState<TDrink[]>([])
-  const [page,setPage]  = useState<number>(1) // falta implementar
-  const [category,setcategory]  = useState<string>() // falta implementar
+  const [page, setPage] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [category,setcategory]  = useState<TCategory>() 
 
-
-  const getDrinks = async() =>{
-    try {
-      const token = await getTokenFromStore()
-      const response = await axios.get('http://localhost:3070/api/v1/cocktails/drinks',{
-        headers:{
-          Authorization:`Bearer ${token}`
-        }
-      })
-      setDrinks(response.data)
-      } catch (error) {
-      console.log(error)
+  const getDrinks = async (pageNumber: number) => {
+    if (loading) return; // Avoid fetching if already loading
+    let url = `http://localhost:3070/api/v1/cocktails/drinks?page=${page}&limit=5`
+    if(category){
+      url += `&category=${category}`
     }
-  }
+    setLoading(true);
+    try {
+      const token = await getTokenFromStore();
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      console.log(response.data)
+      console.log(page)
+      if(category){
+        const newDrinks = drinks.filter(drink=>drink.category===category)
+        setDrinks([...newDrinks,...response.data]);
+      }
+      setDrinks(prevDrinks => [...prevDrinks, ...response.data]);
+      setHasMore(response.data.length > 0);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const loadMore = () => {
+    if (!loading && hasMore) {
+      setPage(prevPage => prevPage + 1);
+    }
+  };
+
   useEffect(()=>{
-    getDrinks()
-  },[])
+    getDrinks(page)
+  },[page,category])
 
   return (
     <View style={[styles.container,{paddingBottom:insets.bottom,paddingTop:insets.top}]}>
@@ -50,23 +72,25 @@ export default function HomeScreen() {
         />
       
         </View>
-
       <View style={styles.categoryContainer}>
         <View style={styles.category}>
           <Text style={styles.categoryText}>Sin alcohol</Text>
         </View>
-          <SelectListCompont />
+          <SelectListCompont selected={category} setSelected={setcategory} />
             </View>
+     {!drinks && <Text> Loading</Text>}
+     {drinks && drinks.length >0 && <FlatList
+         data = {drinks}
+         renderItem={({item})=><CocktailItem cocktail={item} />}
+         keyExtractor={(cocktail)=> cocktail.PK_Drink.toString()}
+         maxToRenderPerBatch={5}
+         onEndReached={loadMore}
+         onEndReachedThreshold={0.5} // Trigger loadMore when 50% from end
 
-      <ScrollView style={styles.cocktailList}>
-        {drinks && drinks.length > 0 ?
-         drinks.map(drink=>(
-          <CocktailItem key={drink.PK_Drink} cocktail={drink} />
-         ))
-         : <Text>No hay bebidas disponibles en este momento</Text>
-      }
-       
-      </ScrollView>
+      
+       />}
+
+     
     </View>
   );
 }
