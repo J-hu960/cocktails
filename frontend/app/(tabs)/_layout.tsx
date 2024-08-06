@@ -1,9 +1,12 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -13,25 +16,48 @@ export default function TabLayout() {
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
-      }}>
+        tabBarActiveTintColor: 'green',  // Aquí especificas el color verde
+        tabBarInactiveTintColor: 'gray',
+
+       }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
+          title: 'Explore',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+           <FontAwesome6 name="searchengin" size={24} color={color} />          ),
+        }}
+      />
+    
+      <Tabs.Screen
+        name="favorites"
+        options={{
+          title: 'Favorites',
+          tabBarIcon: ({ color, focused }) => (
+            <FontAwesome5 name={'grin-hearts'} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="rooms"
         options={{
-          title: 'Explore',
+          title: 'Rooms',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <MaterialIcons name="groups" size={24} color={color} />
           ),
         }}
       />
+
+     <Tabs.Screen
+        name="settings"
+        options={{
+          title: 'Settings',
+          tabBarIcon: ({ color, focused }) => (
+            <MaterialIcons name="settings-suggest" size={24} color={color} />
+          ),
+        }}
+      />
+      
     </Tabs>
   );
 }
