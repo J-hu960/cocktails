@@ -58,4 +58,9 @@ export type TDrinkDetails = {
         strCreativeCommonsConfirmed: string;
         dateModified: string;
     }
+
+export interface IUser{
+        username:string
+        photo?:string
+}
     

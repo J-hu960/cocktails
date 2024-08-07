@@ -8,6 +8,7 @@ import {SafeAreaProvider} from 'react-native-safe-area-context'
 
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { UserProvider } from './context/UserContext';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -29,14 +30,17 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-       <Stack>
-         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-         <Stack.Screen name='login' />
-         <Stack.Screen name="+not-found" />
-       </Stack>
-     </ThemeProvider>
-    </SafeAreaProvider>
+    <UserProvider>
+      <SafeAreaProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+         <Stack>
+           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+           <Stack.Screen name='login' />
+           <Stack.Screen name="+not-found" />
+         </Stack>
+        </ThemeProvider>
+      </SafeAreaProvider>
+    </UserProvider>
+    
   );
 }

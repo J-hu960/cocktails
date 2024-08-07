@@ -1,15 +1,46 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
-
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { TDrink } from '@/app/types';
 import { Link } from 'expo-router';
+import { useUserContext } from '@/app/context/UserContext';
+import axios from 'axios';
+import { getTokenFromStore } from '@/app/utils/asyncStore';
 
 interface Props {
   cocktail: TDrink;
+  canLike:boolean
 }
 
-const CocktailItem = ({ cocktail }: Props) => {
+const CocktailItem = ({ cocktail,canLike }: Props) => {
+  const {dispatch} = useUserContext()
+  const addTofavsOrRemove=async()=>{
+    const url = `http://localhost:3070/api/v1/cocktails/drinks/${cocktail.PK_Drink}/addlike`
+    const token = await getTokenFromStore();
+
+    try {
+     await axios.patch(url,{}, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+  const handleAddDrinkToFavs = async () =>{
+    dispatch({type:'ADD_FAVDRINK',payload:cocktail})
+    //addLike
+    await addTofavsOrRemove()
+  
+    
+  }
+  const handleRemoveFromFavs = async () =>{
+    dispatch({type:'REMOVE_FAVDRINK',payload:cocktail})
+    await addTofavsOrRemove()
+  }
   return (
     <View style={styles.cocktailItem}>
       <View style={styles.cocktailHeader}>
@@ -33,7 +64,17 @@ const CocktailItem = ({ cocktail }: Props) => {
       </View>
       
       <View style={styles.cocktailFooter}>
-        <FontAwesome6 name="heart-circle-plus" size={24} color="red" />
+        {canLike ? (
+          <Pressable onPress={handleAddDrinkToFavs}>
+          <FontAwesome6  name="heart-circle-plus" size={24} color="red" />
+        </Pressable>):(
+           <Pressable onPress={handleRemoveFromFavs}>
+              <Ionicons name="heart-dislike-sharp" size={24} color="black" />         
+           </Pressable>
+
+        )
+        }
+       
         <TouchableOpacity style={styles.saveButton}>
           <Text style={styles.saveButtonText}>Compartir</Text>
         </TouchableOpacity>

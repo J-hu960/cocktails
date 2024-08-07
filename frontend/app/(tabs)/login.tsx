@@ -6,11 +6,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import axios from 'axios'
 import { removeTokenFromStore, setStoreToken } from '../utils/asyncStore';
 import { useNavigation } from '@react-navigation/native';
+import { useUserContext } from '../context/UserContext';
 
 
 
 
 const login = () => {
+  const {dispatch} = useUserContext()
   const [username,setUsername] = useState<string>()
   const [pass,setPass] = useState<string>()
   const insets = useSafeAreaInsets()
@@ -26,8 +28,10 @@ const login = () => {
       if(!token){
         return
       }
-      console.log(response.data) //ya tenim el token, guardarlo a async storage, y guardar info de l'usuari a estat gllobal
+      console.log(token) //ya tenim el token, guardarlo a async storage, y guardar info de l'usuari a estat gllobal
       await setStoreToken(token)
+      if(!username) return
+      dispatch({type:'ADD_NAME',payload:username})
       router.push(`${PrivateRoutes.HOME}`)
     } catch (error) {
       console.log(error)

@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { DrinksService } from 'src/drinks/drinks.service';
 import { UpdateUserDTO } from './dto/UpdateUserDTO';
 import { error } from 'console';
+import { Drink } from 'src/drinks/entities/drinks.enitity';
 
 @Injectable()
 export class UsersService {
@@ -42,8 +43,9 @@ export class UsersService {
       }
       async findOneById(id: number):Promise<Users> {
         return this.userRepository.createQueryBuilder('user')
-        .select()
-        .where('user.PK_User=:id',{id:id}).getOne();
+        .leftJoinAndSelect('user.liked_drinks', 'drink')
+        .where('user.PK_User=:id',{id:id})
+        .getOne();
       }
 
       async  remove(id: number) {
@@ -58,12 +60,14 @@ export class UsersService {
       async addDrinkToUserLikeds(idDrink: number, idUser: number) {
         const user = await this.findOneById(idUser);
         const drink = await this.drinkService.getBBDDDrink(idDrink);
+        console.log(user.liked_drinks)
     
         if (!user.liked_drinks) {
           user.liked_drinks = [];
         }
     
-        user.liked_drinks.push(drink);
+        user.liked_drinks = [...user.liked_drinks,drink];
+        console.log(user.liked_drinks.length)
         await this.userRepository.save(user);
       }
 
@@ -71,18 +75,16 @@ export class UsersService {
         try {
             // Encuentra el usuario por ID
             const user = await this.findOneById(idUser);
-            
+            console.log(user.liked_drinks)
             // Verifica si el usuario tiene la propiedad liked_drinks y asegúrate de que sea un array
             if (!user.liked_drinks) {
                 user.liked_drinks = [];
             }
     
-            // Filtra la bebida que se desea eliminar
-            const removedDrinks = user.liked_drinks.filter(drink => drink.PK_Drink !== idDrink);
-    
             // Asigna la lista filtrada de vuelta al usuario
-            user.liked_drinks = removedDrinks;
-    
+            user.liked_drinks = user.liked_drinks.filter(drink => drink.PK_Drink !== idDrink);
+            console.log(user.liked_drinks.length)
+            console.log('bebida eliminada de likes')
             // Guarda el usuario actualizado
             await this.userRepository.save(user);
         } catch (error) {
@@ -158,7 +160,7 @@ export class UsersService {
         .where("user.PK_User = :id",{id:idUser})
         .getOne()
 
-        console.log(likedByUser.liked_drinks)
+        console.log(likedByUser.liked_drinks.length)
  
         const hasLiked = likedByUser.liked_drinks.some(drink=>drink.PK_Drink == idDrink)
 
@@ -194,6 +196,22 @@ export class UsersService {
       .delete()
       .where('PK_User = :id',{id:user.PK_User})
       .execute()
+    }
+
+    async getUserFavoriteDrinks(user:Users):Promise<Drink[]>{
+      try {
+        const userWithLikedDrinks:Users = await this.userRepository.createQueryBuilder('user')
+        .leftJoinAndSelect('user.liked_drinks','drink')
+        .where('user.PK_User = :id',{id:user.PK_User})
+        .getOne()
+        return userWithLikedDrinks.liked_drinks
+        
+      } catch (error) {
+        console.log(error)
+        
+      }
+       
+
     }
 
 

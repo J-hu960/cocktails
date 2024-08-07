@@ -32,6 +32,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="favorites"
         options={{
+          headerShown:true,
           title: 'Favorites',
           tabBarIcon: ({ color, focused }) => (
             <FontAwesome5 name={'grin-hearts'} color={color} />

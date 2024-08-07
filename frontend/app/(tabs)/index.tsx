@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TCategory, TDrink } from '../types';
 import axios from 'axios';
 import { getTokenFromStore } from '../utils/asyncStore';
+import { useUserContext } from '../context/UserContext';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets()
@@ -15,13 +16,18 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [category,setcategory]  = useState<TCategory>() 
+  const [filterNonAlcoholic,setFilterNonAlcoholic] = useState<boolean>(false)
+  const {state} = useUserContext()
 
-  const getDrinks = async (pageNumber: number) => {
+
+  const getDrinks = async () => {
     if (loading) return; // Avoid fetching if already loading
-    let url = `http://localhost:3070/api/v1/cocktails/drinks?page=${page}&limit=5`
+    let limit = 5;
     if(category){
-      url += `&category=${category}`
+      limit = 30
     }
+    let url = `http://localhost:3070/api/v1/cocktails/drinks?page=${page}&limit=${limit}`
+    
     setLoading(true);
     try {
       const token = await getTokenFromStore();
@@ -32,10 +38,7 @@ export default function HomeScreen() {
       });
       console.log(response.data)
       console.log(page)
-      if(category){
-        const newDrinks = drinks.filter(drink=>drink.category===category)
-        setDrinks([...newDrinks,...response.data]);
-      }
+      
       setDrinks(prevDrinks => [...prevDrinks, ...response.data]);
       setHasMore(response.data.length > 0);
     } catch (error) {
@@ -50,19 +53,29 @@ export default function HomeScreen() {
     }
   };
 
+  const filteredByCategory = category ?
+       drinks.filter(drink=>drink.category === category) 
+       : drinks
+        
   useEffect(()=>{
-    getDrinks(page)
+    getDrinks()
   },[page,category])
+
+  console.log('filtered:', filteredByCategory)
 
   return (
     <View style={[styles.container,{paddingBottom:insets.bottom,paddingTop:insets.top}]}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          {/* <Image style={styles.icon} source={require('./assets/icon0.svg')} /> */}
-          <Text style={styles.headerText}>Cocktail Lounge</Text>
+          <div style={{display:'flex',flexDirection:'column',alignItems:'start',justifyContent:'center'}}>
+            <Text style={styles.headerText}>Cocktail Lounge</Text>
+            <Text style={[styles.headerText,{color:'orange'}]} >Bienvenid@, {state.user.username}</Text>
+          </div>
         </View>
-        <View style={styles.profileCircle}></View>
-      </View>
+        <div style={{width:60,marginRight:6,height:60}}>
+          <Image style={styles.icon} source={{uri:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfos3N8omryPTTqGm07emv6QlbFPuhdjiH1A&s'}} />
+        </div>
+    </View>
 
       <View style={styles.searchBar}>
         <TextInput
@@ -79,9 +92,9 @@ export default function HomeScreen() {
           <SelectListCompont selected={category} setSelected={setcategory} />
             </View>
      {!drinks && <Text> Loading</Text>}
-     {drinks && drinks.length >0 && <FlatList
-         data = {drinks}
-         renderItem={({item})=><CocktailItem cocktail={item} />}
+     {filteredByCategory && filteredByCategory.length >0 && <FlatList
+         data = {filteredByCategory}
+         renderItem={({item})=><CocktailItem canLike={true} cocktail={item} />}
          keyExtractor={(cocktail)=> cocktail.PK_Drink.toString()}
          maxToRenderPerBatch={5}
          onEndReached={loadMore}
@@ -118,14 +131,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
   },
   icon: {
-    width: 14.4,
-    height: 19.2,
+    width: '100%',
+    height:'100%',
   },
   headerText: {
     color: '#ffffff',
     fontSize: 20,
     fontWeight: '700',
-    marginLeft: 10,
   },
   profileCircle: {
     backgroundColor: '#d9d9d9',

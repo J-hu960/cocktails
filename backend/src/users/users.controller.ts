@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, InternalServerErrorException, Param, Patch, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, InternalServerErrorException, Param, Patch, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDTO } from './dto/UpdateUserDTO';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -23,6 +23,15 @@ export class UsersController {
     } catch (error) {
       console.log(error)
       throw new InternalServerErrorException({error:'Error del servidor al intentar borrar al usuario'})
+    }
+  }
+
+  @Get('favorites')
+  async getUserFavoritesDrinks(@Req() req){
+    try {
+      return this.usersService.getUserFavoriteDrinks(req.user)
+    } catch (error) {
+      throw error    
     }
   }
 }
