@@ -94,11 +94,10 @@ export default function HomeScreen() {
      {!drinks && <Text> Loading</Text>}
      {filteredByCategory && filteredByCategory.length >0 && <FlatList
          data = {filteredByCategory}
-         renderItem={({item})=><CocktailItem canLike={true} cocktail={item} />}
+         renderItem={({item})=><CocktailItem cocktail={item} />}
          keyExtractor={(cocktail)=> cocktail.PK_Drink.toString()}
          maxToRenderPerBatch={5}
          onEndReached={loadMore}
-         onEndReachedThreshold={0.5} // Trigger loadMore when 50% from end
 
       
        />}

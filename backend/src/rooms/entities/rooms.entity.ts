@@ -22,7 +22,7 @@ export class Rooms {
   @ManyToOne(()=>Users,{cascade:true})
   user:Users
 
-  @ManyToMany(()=>Users)
+  @ManyToMany(()=>Users,{cascade:true})
   @JoinTable()
    users:Users[]
 

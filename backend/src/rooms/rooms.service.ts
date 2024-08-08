@@ -17,7 +17,12 @@ export class RoomsService {
         private drinksService:DrinksService
     ){}
     
-
+    async getRooms(){
+        return  this.roomsRepository.createQueryBuilder('room')
+        .select()
+        .where('room.isPublic = 1')
+        .getMany();
+    }
     async createRoom(newRoom:CreateRoomDTO,user:Users){
     try {
            if(!newRoom.isPublic && !newRoom.secret_key){
@@ -158,12 +163,18 @@ export class RoomsService {
     }
 
     async getRoomUsers(id:number):Promise<Users[]>{
-        const room = await this.roomsRepository.createQueryBuilder('room')
+        try {
+            const room = await this.roomsRepository.createQueryBuilder('room')
             .leftJoinAndSelect('room.users', 'user')
             .where('room.PK_Rooms = :id', { id })
             .getOne();
-        return room.users
-    
+            if(!room) return
+           return room.users || []
+        
+        } catch (error) {
+             console.log(error)        
+        }
+        
     }
 
     async getRoomDrinks(id:number):Promise<Drink[]>{

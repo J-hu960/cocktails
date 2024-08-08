@@ -63,4 +63,14 @@ export interface IUser{
         username:string
         photo?:string
 }
+export type TRoom = {
+   PK_Rooms: number,
+   name:string,
+   isPublic:boolean,
+   createdAt:Date,
+   secret_key:string,
+   user:IUser,
+   users:IUser[],
+   drinks:TDrink[],
+}
     

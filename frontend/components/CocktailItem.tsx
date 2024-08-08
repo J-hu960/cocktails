@@ -10,11 +10,10 @@ import { getTokenFromStore } from '@/app/utils/asyncStore';
 
 interface Props {
   cocktail: TDrink;
-  canLike:boolean
 }
 
-const CocktailItem = ({ cocktail,canLike }: Props) => {
-  const {dispatch} = useUserContext()
+const CocktailItem = ({ cocktail }: Props) => {
+  const {dispatch,state} = useUserContext()
   const addTofavsOrRemove=async()=>{
     const url = `http://localhost:3070/api/v1/cocktails/drinks/${cocktail.PK_Drink}/addlike`
     const token = await getTokenFromStore();
@@ -41,6 +40,10 @@ const CocktailItem = ({ cocktail,canLike }: Props) => {
     dispatch({type:'REMOVE_FAVDRINK',payload:cocktail})
     await addTofavsOrRemove()
   }
+
+  const hasLiked = state.userFavDrinks.some(drink=>drink.PK_Drink===cocktail.PK_Drink)
+
+
   return (
     <View style={styles.cocktailItem}>
       <View style={styles.cocktailHeader}>
@@ -64,7 +67,7 @@ const CocktailItem = ({ cocktail,canLike }: Props) => {
       </View>
       
       <View style={styles.cocktailFooter}>
-        {canLike ? (
+        {!hasLiked ? (
           <Pressable onPress={handleAddDrinkToFavs}>
           <FontAwesome6  name="heart-circle-plus" size={24} color="red" />
         </Pressable>):(

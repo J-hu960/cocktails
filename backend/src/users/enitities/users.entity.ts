@@ -1,4 +1,5 @@
 import { Drink } from 'src/drinks/entities/drinks.enitity';
+import { Rooms } from 'src/rooms/entities/rooms.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToMany, JoinTable } from 'typeorm';
 
 @Entity()
@@ -25,6 +26,9 @@ export class Users {
   @ManyToMany(()=>Drink,{cascade:true})
   @JoinTable()
   disliked_drinks:Drink[]
+
+  @ManyToMany(()=>Rooms,{cascade:true})
+  rooms:Rooms[]
 
 
 

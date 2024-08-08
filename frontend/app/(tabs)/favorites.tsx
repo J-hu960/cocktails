@@ -35,7 +35,7 @@ const favorites = () => {
 
     userFavoritesDrinks && userFavoritesDrinks.length >0 && <FlatList
       data = {userFavoritesDrinks}
-      renderItem={({item})=><CocktailItem canLike={false} cocktail={item} />}
+      renderItem={({item})=><CocktailItem  cocktail={item} />}
       keyExtractor={(cocktail)=> cocktail.PK_Drink.toString()}
 
 

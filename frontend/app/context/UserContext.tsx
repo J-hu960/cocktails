@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useReducer, ReactNode, Dispatch } from 'react';
-import { IUser, TDrink } from '../types';
+import { IUser, TDrink, TRoom } from '../types';
 
 // Define the shape of the state
 interface UserState {
   user: IUser;
-  userFavDrinks:TDrink[]
+  userFavDrinks:TDrink[],
+  userRooms:TRoom[]
 }
 
 // Define the action types
@@ -15,12 +16,18 @@ type UserAction =
   | {type:'ADD_FAVDRINK'; payload:TDrink}
   | {type:'REMOVE_FAVDRINK'; payload:TDrink}
   | {type:'SET_USERFAVSINITIAL'; payload:TDrink[]}
+  | {type:'SETUSERROOMS',payload:TRoom[]}
+  | {type:'ADDUSERROOM',payload:TRoom}
+  | {type:'REMOVEUSERROOM',payload:TRoom}
+
+
 
 
 // Define the initial state
 const initialState: UserState = {
   user: {username:""},
-  userFavDrinks:[]
+  userFavDrinks:[],
+  userRooms:[]
 
 };
 
@@ -66,7 +73,6 @@ const userReducer = (state: UserState, action: UserAction): UserState => {
         ...state,
         userFavDrinks:[...state.userFavDrinks,action.payload]
       }
-      
     case 'REMOVE_FAVDRINK':
       if(!( state.userFavDrinks.some(drink=>drink.PK_Drink === action.payload.PK_Drink))) 
         return{
@@ -82,6 +88,31 @@ const userReducer = (state: UserState, action: UserAction): UserState => {
         ...state,
         userFavDrinks:action.payload
       }
+    case 'SETUSERROOMS':
+      return{
+        ...state,
+        userRooms:action.payload
+      }
+   case 'ADDUSERROOM':
+    const alreadyInRoomList = state.userRooms.some(room=>room.PK_Rooms === action.payload.PK_Rooms)
+    if(alreadyInRoomList) return{
+      ...state,
+    }
+  return{
+    ...state,
+    userRooms:[...state.userRooms,action.payload]
+  }
+    case 'REMOVEUSERROOM':
+      if(!( state.userRooms.some(room=>room.PK_Rooms === action.payload.PK_Rooms))) 
+        return{
+            ...state,
+      }
+        const newRoomsList:TRoom[] = state.userRooms.filter(room=>room.PK_Rooms!=action.payload.PK_Rooms)
+        return{
+          ...state,
+          userRooms:[...newRoomsList]
+        }
+
     default:
       return state;
   }

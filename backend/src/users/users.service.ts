@@ -6,6 +6,7 @@ import { DrinksService } from 'src/drinks/drinks.service';
 import { UpdateUserDTO } from './dto/UpdateUserDTO';
 import { error } from 'console';
 import { Drink } from 'src/drinks/entities/drinks.enitity';
+import { Rooms } from 'src/rooms/entities/rooms.entity';
 
 @Injectable()
 export class UsersService {
@@ -82,7 +83,9 @@ export class UsersService {
             }
     
             // Asigna la lista filtrada de vuelta al usuario
-            user.liked_drinks = user.liked_drinks.filter(drink => drink.PK_Drink !== idDrink);
+            const filteredDrinks = user.liked_drinks.filter(drink => drink.PK_Drink != idDrink);
+            console.log(filteredDrinks.length)
+            user.liked_drinks = filteredDrinks
             console.log(user.liked_drinks.length)
             console.log('bebida eliminada de likes')
             // Guarda el usuario actualizado
@@ -212,6 +215,22 @@ export class UsersService {
       }
        
 
+    }
+
+    async getUserRooms(user:Users):Promise<Rooms[]>{
+      console.log(user.PK_User)
+      try {
+        const userRooms = await this.userRepository.query(        
+          `  select * 
+          from rooms r
+          left Join rooms_users_users ru on ru.usersPKUser = r.userPKUser
+          where usersPKUser = ?`, [user.PK_User]);
+        console.log(userRooms)
+        return userRooms;
+      } catch (error) {
+        console.error('Error al obtener las salas del usuario:', error);
+        throw new Error('No se pudieron obtener las salas del usuario.');
+      }
     }
 
 
