@@ -1,10 +1,10 @@
 import { TDrinkDetails } from "@/app/types";
 import { getTokenFromStore } from "@/app/utils/asyncStore";
 import axios from "axios";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Card, Button } from 'react-native-elements';
-import { View, Text, Image, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, Dimensions, Pressable } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function DrinkDetails() {
@@ -46,7 +46,10 @@ export default function DrinkDetails() {
         
     },[id])
     return (
-        drink &&  <ScrollView style={[styles.container,{paddingTop:insets.top+40,paddingBottom:insets.bottom}]}>
+        drink &&  <ScrollView style={[styles.container,{paddingTop:insets.top,paddingBottom:insets.bottom}]}>
+             <Pressable onPress={()=>router.back()}>
+                <Text style={{color:'black',margin:4,marginTop:20}}>Go back</Text>
+        </Pressable>
         <Card containerStyle={styles.cardContainer}>
           <Card.Title style={styles.title}>{drink.strDrink}</Card.Title>
           <Card.Image source={{ uri: drink.strDrinkThumb }} style={styles.image} />

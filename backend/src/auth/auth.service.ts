@@ -30,8 +30,6 @@ export class AuthService {
      if(userExist){
        throw new UnauthorizedException()
      }
- 
-  
     try {
         const hashedPassword =  await this.hashPassword(user.password)
         const newUsername = await this.usersService.createUser(hashedPassword,user.username,)

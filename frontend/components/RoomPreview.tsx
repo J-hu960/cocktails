@@ -2,6 +2,7 @@ import { useUserContext } from '@/app/context/UserContext';
 import { TRoom } from '@/app/types'
 import { getTokenFromStore } from '@/app/utils/asyncStore';
 import axios from 'axios';
+import { Link } from 'expo-router';
 import React, { useEffect, useState } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -13,7 +14,9 @@ const RoomPreview = ({room}:props) => {
   const {dispatch,state} = useUserContext()
   const [usersQuant,setUsersQuant] = useState<number>()
     // const usersquant = room.users.length -1
-    const isAlreadyMember = state.userRooms.some(rooms=>rooms.PK_Rooms === room.PK_Rooms)
+
+      const  isAlreadyMember = state.userRooms.some(rooms=>rooms.PK_Rooms === room.PK_Rooms)
+  
     
     const habndleGetUsersFromRoom =async () =>{
       try {
@@ -41,6 +44,7 @@ const RoomPreview = ({room}:props) => {
          console.log(response.data)
          dispatch({type:"ADDUSERROOM",payload:room})
       } catch (error) { 
+        console.log(error)
       }
 
 
@@ -69,7 +73,7 @@ const RoomPreview = ({room}:props) => {
     return (
         <View style={styles.container}>
           <Text style={styles.title}>{room.name}</Text>
-          <Text style={styles.subtitle}>Non-alcoholic cocktail lovers</Text> {/**add field description */}
+          <Text style={styles.subtitle}>Non-alcoholic cocktail lovers</Text> 
           
           <View style={styles.frame}>
             {!isAlreadyMember ?
@@ -77,11 +81,26 @@ const RoomPreview = ({room}:props) => {
                   <Text style={styles.joinText}>Join</Text>
               </Pressable>
             :
+            <View style={{width:'80%',display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
+            <Link
+            href={{
+             pathname: "/(tabs)/roomdetails/[id]",
+             params: { id: room.PK_Rooms},
+           }}>
+              <Text style={{
+                fontWeight:'bold',fontSize:14,color:'green', 
+                borderWidth:1,padding:5,borderColor:'indigo',
+                borderRadius:5
+                }}>Entrar</Text>
+            </Link> 
                <Pressable onPress={hanldeUserLeaveRoom} style={styles.joinButton}>
                  <Text style={styles.joinText}>Leave</Text>
               </Pressable>
+              </View>
+              
+
             }
-           
+         
             <Text style={styles.userCount}>99 users</Text>
           </View>
         </View>
@@ -145,7 +164,6 @@ const styles = StyleSheet.create({
       fontSize: 14,
       fontWeight: '900',
       textAlign: 'center',
-      textStroke: '1px #af4c4c', // Text stroke is not supported in React Native. You may need to use a library or different approach.
     },
     userCount: {
       color: '#000000',

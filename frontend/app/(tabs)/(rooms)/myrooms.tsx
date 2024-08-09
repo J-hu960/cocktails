@@ -6,10 +6,10 @@ import { Link } from 'expo-router'
 import React, { useEffect } from 'react'
 import { Button, FlatList, Text, View } from 'react-native'
 
-const rooms = () => {
+const myrooms = () => {
   const {dispatch,state} = useUserContext()
   const userRooms = state.userRooms
-  
+  console.log(state.userRooms)
   const handleGetUserRooms = async() => {
     try {
       const token = await getTokenFromStore()
@@ -21,7 +21,7 @@ const rooms = () => {
        console.log(response.data)
        dispatch({type:'SETUSERROOMS',payload:response.data})
     } catch (error) {
-      
+      console.log(error)
     }
   }
 
@@ -29,16 +29,26 @@ const rooms = () => {
       handleGetUserRooms()
   },[])
   return (
-    <View style={{display:'flex',flexDirection:'column'}}>
-      {userRooms && userRooms.length >0 &&
-         <FlatList
-         data = {userRooms}
-         renderItem={({item})=><RoomPreview room={item} />}
-         keyExtractor={(room)=> room.PK_Rooms.toString()}      
-       />}
-        
+    <View style={{ display: 'flex', flexDirection: 'column' }}>
+       <Link
+           href={{
+            pathname: "/(rooms)",
+          }}>          
+            <Text style={{backgroundColor:'green',margin:5}}>Explorar salas</Text>
+
+          </Link>
+      {userRooms && userRooms.length > 0 ? (
+        <FlatList
+          data={userRooms}
+          renderItem={({ item }) => <RoomPreview room={item} />}
+          keyExtractor={(room) => room.PK_Rooms.toString()}
+        />
+      ) : (
+        <Text>No rooms available</Text>
+      )}
     </View>
-  )
+  );
+  
 }
 
-export default rooms
+export default myrooms;

@@ -2,8 +2,9 @@ import { TRoom } from '@/app/types'
 import { getTokenFromStore } from '@/app/utils/asyncStore'
 import RoomPreview from '@/components/RoomPreview'
 import axios from 'axios'
+import { Link } from 'expo-router'
 import React, { useEffect, useState } from 'react'
-import { FlatList, View } from 'react-native'
+import { FlatList, Pressable, Text, View } from 'react-native'
 
 const exploreRooms = () => {
 
@@ -22,11 +23,21 @@ const exploreRooms = () => {
       
     }
   }
+  if(rooms) console.log('rooms:',rooms)
   useEffect(()=>{
     handleGetRooms()
   },[])
    return (
     <View>
+          <Link
+           href={{
+            pathname: '/myrooms',
+          }}>          
+            <Text style={{backgroundColor:'green',margin:5}}>Ir a mis salas</Text>
+
+          </Link>
+
+
        {  rooms && rooms.length >0 &&
       <FlatList
       data = {rooms}

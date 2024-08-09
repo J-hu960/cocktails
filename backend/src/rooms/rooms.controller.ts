@@ -23,16 +23,34 @@ export class RoomsController {
       console.log(error)
     }
   }
+
   @Get('/myrooms')
- async getUserRooms(@Req() req){
+  async getUserRooms(@Req() req){
+     try {
+       console.log('rooms de :',req.user)
+       const rooms = await this.usersService.getUserRooms(req.user)
+       return rooms
+     } catch (error) {
+       console.log(error)
+     }
+   }
+
+  @Get(':id')
+  async getRoom(@Param('id') id:number){
     try {
-      console.log('rooms de :',req.user)
-      const rooms = await this.usersService.getUserRooms(req.user)
-      return rooms
+      const room = await this.roomsService.findOneRoom(id)
+      const drinks = await this.roomsService.getRoomDrinks(id)
+       return{
+          room,
+          drinks
+       }
     } catch (error) {
       console.log(error)
     }
   }
+
+
+
   
   @Get(':id')
   async getRoomsUsers(@Param('id') id:number){

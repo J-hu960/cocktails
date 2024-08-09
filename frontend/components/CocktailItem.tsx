@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable } from 'reac
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { TDrink } from '@/app/types';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useUserContext } from '@/app/context/UserContext';
 import axios from 'axios';
 import { getTokenFromStore } from '@/app/utils/asyncStore';

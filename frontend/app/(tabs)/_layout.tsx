@@ -13,6 +13,7 @@ export default function TabLayout() {
 
   return (
     <Tabs
+       backBehavior="history"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
@@ -40,7 +41,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="rooms"
+        name="(rooms)"
         options={{
           title: 'Rooms',
           tabBarIcon: ({ color, focused }) => (
@@ -48,7 +49,7 @@ export default function TabLayout() {
           ),
         }}
       />
-
+       
      <Tabs.Screen
         name="settings"
         options={{
