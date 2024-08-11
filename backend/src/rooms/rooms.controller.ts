@@ -49,10 +49,7 @@ export class RoomsController {
     }
   }
 
-
-
-  
-  @Get(':id')
+  @Get('users/:id')
   async getRoomsUsers(@Param('id') id:number){
     try {
       return this.roomsService.getRoomUsers(id)
@@ -66,7 +63,7 @@ export class RoomsController {
     try {
        this.roomsService.deleteUserFromRoom(req.user,roomId)
     } catch (error) {
-      throw error
+      return error
     }
   }
 
@@ -76,29 +73,32 @@ export class RoomsController {
     try {
       this.roomsService.createRoom(body,req.user)
     } catch (error) {
-      throw  error 
+      return  error 
     }
   }
 
   //unirse a una sala, si es privada codi secret
   @Patch('join/:id')
-  async addUserToRoom(@Req() req, @Param('id') roomId:number, @Body() body:JoinRoomDTO){
+  async addUserToPublicRoom(@Req() req, @Param('id') roomId:number, @Body() body:JoinRoomDTO){
 
     const room = await this.roomsService.findOneRoom(roomId)
-    if(room.isPublic){
       try {
         this.roomsService.userJoinPublicRoom(req.user,roomId)
       } catch (error) {
-       throw error
+       return error
       }
 
-    }else{
+    
+  }
+  @Patch('joinprivate')
+  async addUserToPrivateRoom(@Req() req, @Body('secret') secret:string){
+    const room = await this.roomsService.findRoomBySecret(secret)
       try {
-         this.roomsService.userJoinPrivateRoom(req.user,roomId,body.secret_key)
+         this.roomsService.userJoinPrivateRoom(req.user,room,secret)
       } catch (error) {
-        throw error
+        return error
       }
-    }
+    
   }
 
   //afegir una beguda a una sala (todos los usuarios de la sala lo pueden hacer)
@@ -113,7 +113,7 @@ export class RoomsController {
     try {
       this.roomsService.addDrinkToRoom(roomId,req.user,drinkId)
     } catch (error) {
-      console.log(error)
+      throw new  error
   
     }
     

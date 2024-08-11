@@ -17,8 +17,22 @@ export default function HomeScreen() {
   const [hasMore, setHasMore] = useState<boolean>(true);
   const [category,setcategory]  = useState<TCategory>() 
   const [filterNonAlcoholic,setFilterNonAlcoholic] = useState<boolean>(false)
-  const {state} = useUserContext()
+  const {state,dispatch} = useUserContext()
 
+  const handleGetUserRooms = async() => {
+    try {
+      const token = await getTokenFromStore()
+       const response = await axios.get('http://192.168.1.35:3070/api/v1/cocktails/rooms/myrooms',{
+        headers:{
+          Authorization:`Bearer ${token}`
+        }
+       })
+       console.log(response.data)
+       dispatch({type:'SETUSERROOMS',payload:response.data})
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const getDrinks = async () => {
     if (loading) return; // Avoid fetching if already loading
@@ -26,7 +40,7 @@ export default function HomeScreen() {
     if(category){
       limit = 30
     }
-    let url = `http://localhost:3070/api/v1/cocktails/drinks?page=${page}&limit=${limit}`
+    let url = `http://192.168.1.35:3070/api/v1/cocktails/drinks?page=${page}&limit=${limit}`
     
     setLoading(true);
     try {
@@ -58,23 +72,26 @@ export default function HomeScreen() {
        : drinks
         
   useEffect(()=>{
+    handleGetUserRooms()
+  },[])
+  useEffect(()=>{
     getDrinks()
   },[page,category])
 
   console.log('filtered:', filteredByCategory)
 
   return (
-    <View style={[styles.container,{paddingBottom:insets.bottom,paddingTop:insets.top}]}>
+    <View style={[styles.container,{paddingBottom:insets.bottom,paddingTop:insets.top,paddingLeft:insets.left,paddingRight:insets.right}]}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <div style={{display:'flex',flexDirection:'column',alignItems:'start',justifyContent:'center'}}>
+          <View style={{display:'flex',flexDirection:'column',alignItems:'start',justifyContent:'center'}}>
             <Text style={styles.headerText}>Cocktail Lounge</Text>
             <Text style={[styles.headerText,{color:'orange'}]} >Bienvenid@, {state.user.username}</Text>
-          </div>
+          </View>
         </View>
-        <div style={{width:60,marginRight:6,height:60}}>
+        <View style={{width:60,marginRight:6,height:60}}>
           <Image style={styles.icon} source={{uri:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfos3N8omryPTTqGm07emv6QlbFPuhdjiH1A&s'}} />
-        </div>
+        </View>
     </View>
 
       <View style={styles.searchBar}>

@@ -81,8 +81,14 @@ export class RoomsService {
         }
     }
 
-    async userJoinPrivateRoom(user:Users,roomId:number,secret_key:string){
-        const room = await this.findOneRoom(roomId)
+    async findRoomBySecret(secret:string):Promise<Rooms>{
+        return this.roomsRepository.createQueryBuilder()
+        .select()
+        .where('secret_key = :secret',{secret:secret})
+        .getOne()
+    }
+
+    async userJoinPrivateRoom(user:Users,room:Rooms,secret_key:string){
          if(!room){
             throw new BadRequestException({error:"La sala no existe."})
          }

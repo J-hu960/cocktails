@@ -21,6 +21,29 @@ export default function TabLayout() {
         tabBarInactiveTintColor: 'gray',
 
        }}>
+         {/* <Tabs.Screen
+        name="login"
+        options={{
+         href:null
+        }}
+      /> */}
+         <Tabs.Screen
+         name="signup"
+         options={{
+         href:null
+        }}
+      />
+        <Tabs.Screen
+         name="drinks/[id]"
+         options={{
+         href:null
+        }}
+      />  <Tabs.Screen
+      name="roomdetails/[id]"
+      options={{
+      href:null
+     }}
+   />
       <Tabs.Screen
         name="index"
         options={{

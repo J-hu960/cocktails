@@ -73,4 +73,12 @@ export type TRoom = {
    users:IUser[],
    drinks:TDrink[],
 }
+
+export type TReview = {
+        PK_Review:string,
+        createdAt:Date,
+        content:string,
+        userPKUser?:number,
+        drinkPKDrink?:number
+}
     

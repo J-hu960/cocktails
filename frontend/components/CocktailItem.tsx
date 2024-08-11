@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity, Pressable, ScrollView, FlatList, Button } from 'react-native';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { TDrink } from '@/app/types';
@@ -7,13 +7,18 @@ import { Link, router } from 'expo-router';
 import { useUserContext } from '@/app/context/UserContext';
 import axios from 'axios';
 import { getTokenFromStore } from '@/app/utils/asyncStore';
+import CheckboxCustom from './Checkbox';
 
 interface Props {
   cocktail: TDrink;
 }
 
 const CocktailItem = ({ cocktail }: Props) => {
+  const initialLikes = cocktail.likes
   const {dispatch,state} = useUserContext()
+  const [showForm,setShowForm] =useState<boolean>(false)
+  const [likes,setLikes] = useState<number>(initialLikes)
+  const userRooms = state.userRooms
   const addTofavsOrRemove=async()=>{
     const url = `http://localhost:3070/api/v1/cocktails/drinks/${cocktail.PK_Drink}/addlike`
     const token = await getTokenFromStore();
@@ -31,6 +36,7 @@ const CocktailItem = ({ cocktail }: Props) => {
   }
   const handleAddDrinkToFavs = async () =>{
     dispatch({type:'ADD_FAVDRINK',payload:cocktail})
+    setLikes(prev=>prev+1)
     //addLike
     await addTofavsOrRemove()
   
@@ -38,17 +44,51 @@ const CocktailItem = ({ cocktail }: Props) => {
   }
   const handleRemoveFromFavs = async () =>{
     dispatch({type:'REMOVE_FAVDRINK',payload:cocktail})
+    setLikes(prev=>prev-1)
     await addTofavsOrRemove()
   }
 
   const hasLiked = state.userFavDrinks.some(drink=>drink.PK_Drink===cocktail.PK_Drink)
 
+   const handleSHareForm = ()=>{
+    setShowForm(prev=>!prev)
+   }
+
 
   return (
-    <View style={styles.cocktailItem}>
+   
+    showForm ?(
+      <ScrollView>
+      <View style={styles.cocktailItem}>
       <View style={styles.cocktailHeader}>
+       <Text style={styles.cocktailTitle}>{cocktail.name}</Text>
+       <Text style={styles.cocktailReview}>Ver opiniones</Text>
+     </View>
+     <Pressable  onPress={handleSHareForm}>
+       <Text>Ver completo</Text>
+     </Pressable>
+     <FlatList
+         data = {userRooms}
+         renderItem={({item})=>(
+           <View style={{width:'100%',borderWidth:1,padding:3,marginTop:2,display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'space-between'}}>
+               <Text>{item.name}</Text>
+               <CheckboxCustom iddrink={cocktail.PK_Drink} idroom={item.PK_Rooms} />
+           </View>
+        )}
+         keyExtractor={(room)=> room.PK_Rooms.toString()}
+
+       />
+     
+   
+      
+      
+     </View>
+   </ScrollView>
+ 
+    ):(
+      <View style={styles.cocktailItem}>
+       <View style={styles.cocktailHeader}>
         <Text style={styles.cocktailTitle}>{cocktail.name}</Text>
-        <Text style={styles.cocktailReview}>Ver opiniones</Text>
       </View>
       
       <Image style={styles.cocktailImage} source={{ uri: cocktail.photo }} />
@@ -67,6 +107,7 @@ const CocktailItem = ({ cocktail }: Props) => {
       </View>
       
       <View style={styles.cocktailFooter}>
+        <View style={{display:'flex',flexDirection:'row',alignItems:'center',justifyContent:'center',columnGap:5}}>
         {!hasLiked ? (
           <Pressable onPress={handleAddDrinkToFavs}>
           <FontAwesome6  name="heart-circle-plus" size={24} color="red" />
@@ -77,12 +118,19 @@ const CocktailItem = ({ cocktail }: Props) => {
 
         )
         }
+        <Text style={{fontWeight:'bold'}}>{likes}</Text>
+
+        </View>
+     
        
-        <TouchableOpacity style={styles.saveButton}>
-          <Text style={styles.saveButtonText}>Compartir</Text>
-        </TouchableOpacity>
+        <Pressable style={styles.saveButton}>
+          <Text onPress={handleSHareForm} style={styles.saveButtonText}>Compartir</Text>
+        </Pressable>
       </View>
     </View>
+  
+    )
+   
   );
 };
 
@@ -100,6 +148,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    width:300
   },
   cocktailHeader: {
     flexDirection: 'row',

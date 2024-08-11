@@ -1,4 +1,4 @@
-import { TDrinkDetails } from "@/app/types";
+import { TDrinkDetails, TReview } from "@/app/types";
 import { getTokenFromStore } from "@/app/utils/asyncStore";
 import axios from "axios";
 import { router, useLocalSearchParams } from "expo-router";
@@ -6,16 +6,37 @@ import { useEffect, useState } from "react";
 import { Card, Button } from 'react-native-elements';
 import { View, Text, Image, StyleSheet, ScrollView, Dimensions, Pressable } from 'react-native';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Reviews from "@/components/Reviews";
 
 export default function DrinkDetails() {
     const insets = useSafeAreaInsets()
     const { id } = useLocalSearchParams();
     const [drink,setDrink] = useState<TDrinkDetails>()
+    const [showReviews,setShowReviews] = useState<boolean>(false)
+    const [drinkreviews,setDrinkReviews] = useState<TReview[]>()
+    const handleClickReviews = async()=>{
+      await getDrinkReviews()
+      setShowReviews(prev=>!prev)
+    }
+    const getDrinkReviews = async() => {
+            try {
+              const token = await getTokenFromStore()
+              const response = await axios.get(`http://192.168.1.35:3070/api/v1/cocktails/reviews/${id}`,{
+                headers:{
+                  Authorization:`Bearer ${token}`
+                }
+              })
+              setDrinkReviews(response.data)
 
+            } catch (error) {
+              console.log(error)
+
+            }
+    }
     const getDrinkDetails = async()=>{
         try {
             const token = await getTokenFromStore()
-            const response = await axios.get(`http://localhost:3070/api/v1/cocktails/drinks/${id}`,{
+            const response = await axios.get(`http://192.168.1.35:3070/api/v1/cocktails/drinks/${id}`,{
                 headers:{
                     Authorization: `Bearer ${token}`
                 }
@@ -46,12 +67,14 @@ export default function DrinkDetails() {
         
     },[id])
     return (
-        drink &&  <ScrollView style={[styles.container,{paddingTop:insets.top,paddingBottom:insets.bottom}]}>
+      
+        drink &&  <ScrollView style={[styles.container,{paddingTop:insets.top,paddingBottom:insets}]}>
              <Pressable onPress={()=>router.back()}>
                 <Text style={{color:'black',margin:4,marginTop:20}}>Go back</Text>
-        </Pressable>
+             </Pressable>
         <Card containerStyle={styles.cardContainer}>
           <Card.Title style={styles.title}>{drink.strDrink}</Card.Title>
+         
           <Card.Image source={{ uri: drink.strDrinkThumb }} style={styles.image} />
           <Text style={styles.category}>Category: {drink.strCategory}</Text>
           <Text style={styles.iba}>IBA: {drink.strIBA}</Text>
@@ -63,14 +86,35 @@ export default function DrinkDetails() {
           <Text style={styles.ingredients}>
            {renderIngredients()}
           </Text>
-          <Button
-            title="Save"
+        
+            <Button
+            title="Ver opiniones"
             buttonStyle={styles.button}
             containerStyle={styles.buttonContainer}
-            onPress={() => console.log('View More Pressed')}
+            onPress={handleClickReviews}
           />
+
+     
+         
         </Card>
+        { showReviews ?
+         drinkreviews &&drinkreviews.length>0 ?
+        (
+          <View style={{backgroundColor:'orange',padding:20,rowGap:6,display:'flex',flexDirection:'column'
+            , alignItems:'center',justifyContent:'flex-start'
+          }}>
+            <Text style={{textAlign:'left',width:'100%',fontSize:22}}>Opiniones de usuarios,total: {drinkreviews.length}</Text>
+            {drinkreviews.map(review=>(
+              <View style={{height:50,backgroundColor:'gray',padding:5,width:'100%'}}>
+                 <Text style={{color:'white'}}>- {review.PK_Review + 1}: {review.content}</Text>
+              </View> 
+              ))}
+          </View>
+        ):(<Text>No hay opiniones aún</Text>)
+         
+        : ''}
       </ScrollView> 
+      
        
       );
 }

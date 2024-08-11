@@ -13,7 +13,7 @@ const favorites = () => {
   const getUserFavorites = async() =>{
     try {
       const token = await getTokenFromStore()
-      const response = await axios.get('http://localhost:3070/api/v1/cocktails/users/favorites',{
+      const response = await axios.get('http://192.168.1.35:3070/api/v1/cocktails/users/favorites',{
         headers:{
           Authorization:`Bearer ${token}`
         }

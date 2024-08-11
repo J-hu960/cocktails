@@ -10,24 +10,8 @@ const myrooms = () => {
   const {dispatch,state} = useUserContext()
   const userRooms = state.userRooms
   console.log(state.userRooms)
-  const handleGetUserRooms = async() => {
-    try {
-      const token = await getTokenFromStore()
-       const response = await axios.get('http://localhost:3070/api/v1/cocktails/rooms/myrooms',{
-        headers:{
-          Authorization:`Bearer ${token}`
-        }
-       })
-       console.log(response.data)
-       dispatch({type:'SETUSERROOMS',payload:response.data})
-    } catch (error) {
-      console.log(error)
-    }
-  }
+ 
 
-  useEffect(()=>{
-      handleGetUserRooms()
-  },[])
   return (
     <View style={{ display: 'flex', flexDirection: 'column' }}>
        <Link

@@ -12,7 +12,7 @@ const exploreRooms = () => {
   const handleGetRooms = async () =>{
     try {
       const token = await getTokenFromStore()
-       const response = await axios.get('http://localhost:3070/api/v1/cocktails/rooms',{
+       const response = await axios.get('http://192.168.1.35:3070/api/v1/cocktails/rooms',{
         headers:{
           Authorization:`Bearer ${token}`
         }

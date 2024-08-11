@@ -1,7 +1,7 @@
 import { PrivateRoutes, PublicRoutes } from '@/constants/Routes';
 import { Link, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react'
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Pressable } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ImageBackground, Pressable, Button } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import axios from 'axios'
 import { removeTokenFromStore, setStoreToken } from '../utils/asyncStore';
@@ -20,7 +20,7 @@ const login = () => {
 
   const handleLogin = async () =>{
     try {
-      const response = await axios.post('http://localhost:3070/api/v1/cocktails/auth/signIn',{
+      const response = await axios.post('http://192.168.1.35:3070/api/v1/cocktails/auth/signIn',{
         username,
         password:pass
       })
@@ -67,6 +67,7 @@ const login = () => {
             onChangeText={setPass}
             value={pass}
           />
+          <Button title='Init' onPress={handleLogin}></Button>
           <Pressable  style={styles.button} onPress={handleLogin}>
             <Text style={styles.buttonText}>Iniciar Sesión</Text>
           </Pressable>

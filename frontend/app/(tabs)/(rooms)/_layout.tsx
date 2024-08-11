@@ -3,6 +3,7 @@ import { Slot, useRouter } from "expo-router";
 
 import React from 'react'
 import { Button, Image, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaFrame, useSafeAreaInsets } from "react-native-safe-area-context";
 
 const _layout = () => {
     const {state} = useUserContext()
@@ -13,19 +14,20 @@ const _layout = () => {
      const handleClickJoinRoom = ()=>{
      router.push('/joinRoomForm')
      }
+     const insets = useSafeAreaInsets()
   return (
-    <View>
+    <View style={{paddingBottom:insets.bottom,paddingTop:insets.top}}>
         <View style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
         <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <div style={{display:'flex',flexDirection:'column',alignItems:'start',justifyContent:'center'}}>
+          <View style={{display:'flex',flexDirection:'column',alignItems:'start',justifyContent:'center'}}>
             <Text style={styles.headerText}>Cocktail Lounge</Text>
             <Text style={[styles.headerText,{color:'orange'}]} >Bienvenid@, {state.user.username}</Text>
-          </div>
+          </View>
         </View>
-        <div style={{width:60,marginRight:6,height:60}}>
+        <View style={{width:60,marginRight:6,height:60}}>
           <Image style={styles.icon} source={{uri:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfos3N8omryPTTqGm07emv6QlbFPuhdjiH1A&s'}} />
-        </div>
+        </View>
         </View>
         <View style={{display:'flex',flexDirection:'column',width:'100%', alignItems:'flex-start', rowGap:6,marginTop:6}}>
             <Button onPress={handleClickCreateNewRoom} title="Create Room" />

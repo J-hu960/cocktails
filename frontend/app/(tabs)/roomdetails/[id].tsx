@@ -2,9 +2,9 @@ import { TDrink, TRoom } from '@/app/types';
 import { getTokenFromStore } from '@/app/utils/asyncStore';
 import CocktailItem from '@/components/CocktailItem';
 import axios from 'axios';
-import { Link, useLocalSearchParams, useRouter } from 'expo-router';
+import { Link, Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react'
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const RoomDetails = () => {
@@ -13,6 +13,7 @@ const RoomDetails = () => {
     const [room,setRoom] = useState<TRoom>()
     const [roomDrinks,setRoomDrinks] = useState<TDrink[]>()
     const router = useRouter()
+    if(room)console.log(room)
 
     const handleGoBack = ()=>{
         router.back()
@@ -25,7 +26,7 @@ const RoomDetails = () => {
                     Authorization:`Bearer ${token}`
                 }
             })
-            setRoom( response.data)
+            setRoom( response.data.room)
             console.log( response.data.room)
 
         } catch (error) {
@@ -58,25 +59,29 @@ const RoomDetails = () => {
      },[])
 
   return (
-    room &&
-        <View style={{display:'flex',flexDirection:'column',paddingBottom:insets.bottom,paddingTop:insets.top,paddingLeft:insets.left,
+
+  
+    room ?
+        <ScrollView style={{display:'flex',flexDirection:'column',paddingBottom:insets.bottom,paddingTop:insets.top,paddingLeft:insets.left,
         }}>
             <View>
                   
               <Pressable onPress={handleGoBack}>
                 <Text style={{color:'blue',margin:4}}>Go back</Text>
               </Pressable>
-              <Text style={{textAlign:'center',fontSize:18,fontWeight:'semibold',textDecorationLine:'underline'}}> {room?.name}</Text>  
+              <Text style={{textAlign:'center',fontSize:18,fontWeight:'semibold',textDecorationLine:'underline'}}> {room.name}</Text>  
             </View>
-            {roomDrinks && roomDrinks.length >0 && <FlatList
+            {roomDrinks && roomDrinks.length >0 ? <FlatList
          data = {roomDrinks}
          renderItem={({item})=><CocktailItem cocktail={item} />}
          keyExtractor={(drink)=> drink.PK_Drink.toString()}      
-       />}
-
-         </View>
+       /> : <Text>Añade bebidas a la 7sala para verlas aqui</Text>
      
-   
+    }
+    </ScrollView>
+    :<Text>loading...</Text>
+     
+    
 
 )}
 

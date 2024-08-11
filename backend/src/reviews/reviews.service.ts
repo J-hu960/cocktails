@@ -21,4 +21,17 @@ export class ReviewsService {
         newReview.user = user
         await this.reviewsRepository.save(newReview)
     }
+
+    async getDrinkReviews(idDrink:number):Promise<Reviews[]>{
+        try {
+            return await this.reviewsRepository.createQueryBuilder()
+            .select()
+            .where('drinkPKDrink = :id',{id:idDrink})
+            .getMany()
+        
+        } catch (error) {
+               return error         
+        }
+        
+    }
 }

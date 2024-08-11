@@ -4,9 +4,11 @@ import { View, Text, TextInput, Switch, Button, Alert } from 'react-native';
 import { getTokenFromStore } from './utils/asyncStore';
 
 const createRoomForms = () => {
-  const [name, setName] = useState('');
-  const [isPublic, setIsPublic] = useState(true);
-  const [secretKey, setSecretKey] = useState('');
+  const [name, setName] = useState<string>('');
+  const [isPublic, setIsPublic] = useState<boolean>(true);
+  const [secretKey, setSecretKey] = useState<string>('');
+  const [error,setError] = useState<boolean>(false)
+  const [succes,setSuccess] = useState<boolean>(false)
 
   const hanldeSubmit = async() => {
     try {
@@ -31,17 +33,25 @@ const createRoomForms = () => {
             Authorization:`Bearer ${token}`
           }
         })
+
+
   
 
       }
+      setSuccess(true)
+      setTimeout(()=>{
+             setSuccess(false)
+      },3000)
       
     } catch (error) {
       console.log(error)
+      setError(true)
+      setTimeout(()=>{
+             setError(false)
+      },3000)
       
     }
-   
   
-
   }
 
  
@@ -78,6 +88,8 @@ const createRoomForms = () => {
           )}
 
           <Button title="Enviar" onPress={hanldeSubmit}  />
+          {succes ? <Text style={{textAlign:'center',color:'green',fontSize:18}}>¡Sala creada con éxito!</Text>:''}
+          {error ? <Text style={{textAlign:'center',color:'red',fontSize:18}}>Error al crear la sala</Text>:''}
       </View>
   );
 }

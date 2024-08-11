@@ -1,5 +1,5 @@
 import { useUserContext } from '@/app/context/UserContext';
-import { TRoom } from '@/app/types'
+import { IUser, TRoom } from '@/app/types'
 import { getTokenFromStore } from '@/app/utils/asyncStore';
 import axios from 'axios';
 import { Link } from 'expo-router';
@@ -12,16 +12,15 @@ interface props{
 }
 const RoomPreview = ({room}:props) => {
   const {dispatch,state} = useUserContext()
+  const [members,setMembers] = useState<number>()
   const [usersQuant,setUsersQuant] = useState<number>()
-    // const usersquant = room.users.length -1
 
-      const  isAlreadyMember = state.userRooms.some(rooms=>rooms.PK_Rooms === room.PK_Rooms)
+   const  isAlreadyMember = state.userRooms.some(rooms=>rooms.PK_Rooms === room.PK_Rooms)
   
-    
     const habndleGetUsersFromRoom =async () =>{
       try {
         const token = await getTokenFromStore()
-        const response = await axios.get(`http://api/v1/cocktails/rooms/${room.PK_Rooms}`,{
+        const response = await axios.get(`http://192.168.1.35//api/v1/cocktails/rooms/${room.PK_Rooms}`,{
           headers:{
             Authorization:`Bearer ${token}`
           }
@@ -34,7 +33,7 @@ const RoomPreview = ({room}:props) => {
     const handleClickJoinRoom =async () =>{
       try {
         const token = await getTokenFromStore()
-         const response = await axios.patch(`http://localhost:3070/api/v1/cocktails/rooms/join/${room.PK_Rooms}`,{},
+         const response = await axios.patch(`http://192.168.1.35:3070/api/v1/cocktails/rooms/join/${room.PK_Rooms}`,{},
           {
             headers:{
               Authorization:`Bearer ${token}`
@@ -43,6 +42,7 @@ const RoomPreview = ({room}:props) => {
          )
          console.log(response.data)
          dispatch({type:"ADDUSERROOM",payload:room})
+         setMembers(prev=>prev+1)
       } catch (error) { 
         console.log(error)
       }
@@ -53,7 +53,7 @@ const RoomPreview = ({room}:props) => {
     const hanldeUserLeaveRoom = async()=>{
       try {
         const token = await getTokenFromStore()
-         const response = await axios.delete(`http://localhost:3070/api/v1/cocktails/rooms/${room.PK_Rooms}`,
+         const response = await axios.delete(`http://192.168.1.35:3070/api/v1/cocktails/rooms/${room.PK_Rooms}`,
           {
             headers:{
               Authorization:`Bearer ${token}`
@@ -62,13 +62,31 @@ const RoomPreview = ({room}:props) => {
          )
          console.log(response.data)
          dispatch({type:"REMOVEUSERROOM",payload:room})
+         setMembers(prev=>prev-1)
       } catch (error) { 
+        console.log(error)
       }
 
     }
 
+    const getRoomsUsers = async()=>{
+      try {
+        const token = await getTokenFromStore()
+        const response = await axios.get(`http://192.168.1.35:3070/api/v1/cocktails/rooms/users/${room.PK_Rooms}`,{
+          headers:{
+            Authorization:`Bearer ${token}`
+          }
+        })
+        setMembers(response.data.length)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    if(members)console.log(members)
+
     useEffect(()=>{
       habndleGetUsersFromRoom()
+      getRoomsUsers()
     },[])
     return (
         <View style={styles.container}>
@@ -100,8 +118,7 @@ const RoomPreview = ({room}:props) => {
               
 
             }
-         
-            <Text style={styles.userCount}>99 users</Text>
+            <Text style={styles.userCount}>{members}</Text>
           </View>
         </View>
       );

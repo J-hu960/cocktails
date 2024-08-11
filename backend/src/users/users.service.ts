@@ -221,10 +221,10 @@ export class UsersService {
       console.log(user.PK_User)
       try {
         const userRooms = await this.userRepository.query(        
-          `  select * 
-          from rooms r
-          left Join rooms_users_users ru on ru.usersPKUser = r.userPKUser
-          where usersPKUser = ?`, [user.PK_User]);
+          `   select * from rooms r 
+      where r.PK_Rooms in (select roomsPKrooms from rooms_users_users ru
+        where usersPKUser = ?
+      )`, [user.PK_User]);
         console.log(userRooms)
         return userRooms;
       } catch (error) {
