@@ -19,13 +19,15 @@ type UserAction =
   | {type:'SETUSERROOMS',payload:TRoom[]}
   | {type:'ADDUSERROOM',payload:TRoom}
   | {type:'REMOVEUSERROOM',payload:TRoom}
+  | {type:'SETPHOTO',payload:string}
+
 
 
 
 
 // Define the initial state
 const initialState: UserState = {
-  user: {username:""},
+  user: {username:"",photo:undefined},
   userFavDrinks:[],
   userRooms:[]
 
@@ -112,6 +114,15 @@ const userReducer = (state: UserState, action: UserAction): UserState => {
           ...state,
           userRooms:[...newRoomsList]
         }
+    case 'SETPHOTO':
+        const updatedUser:IUser = {
+          username:state.user.username,
+          photo:action.payload
+        }
+         return{
+        ...state,
+        user:updatedUser
+        } 
 
     default:
       return state;

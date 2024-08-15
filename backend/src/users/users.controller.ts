@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, InternalServerErrorException, Param, Patch, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, InternalServerErrorException, Param, Patch, Post, Req, UnauthorizedException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDTO } from './dto/UpdateUserDTO';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(AuthGuard)
 @Controller('users')
@@ -15,6 +16,16 @@ export class UsersController {
       throw error    
     }
   }
+
+  @Post('picture')
+  @UseInterceptors(FileInterceptor('file'))
+  uploadFile(@UploadedFile() file:Express.Multer.File){
+    console.log(file)
+    return {
+      message:'hola'
+    }
+  }
+
 
   @Delete('me')
   async deleteUser(@Req() req){

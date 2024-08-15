@@ -63,8 +63,7 @@ export default function DrinkDetails() {
       };
 
     useEffect(()=>{
-        getDrinkDetails()
-        
+        getDrinkDetails()    
     },[id])
     return (
       

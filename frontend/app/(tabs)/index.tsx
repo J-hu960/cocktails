@@ -90,7 +90,10 @@ export default function HomeScreen() {
           </View>
         </View>
         <View style={{width:60,marginRight:6,height:60}}>
-          <Image style={styles.icon} source={{uri:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfos3N8omryPTTqGm07emv6QlbFPuhdjiH1A&s'}} />
+          <Image style={styles.icon} 
+             source={state.user.photo ? { uri: state.user.photo } : {uri:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfos3N8omryPTTqGm07emv6QlbFPuhdjiH1A&s'}}
+
+          />
         </View>
     </View>
 
